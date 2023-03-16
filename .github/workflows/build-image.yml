@@ -28,4 +28,4 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3.4.0
     - name: Build the Docker image
-      run: docker build ./${{ matrix.framework }}/ --file Dockerfile --tag ${{ env.REGISTRY }}/${{ env.REPO }}-${{ matrix.framework }}:${{ env.BUILD_DATE }}
+      run: docker build ./${{ matrix.framework }}/ --file ${{ matrix.framework }}/Dockerfile --tag ${{ env.REGISTRY }}/${{ env.REPO }}-${{ matrix.framework }}:${{ env.BUILD_DATE }}
