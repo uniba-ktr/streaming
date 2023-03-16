@@ -16,7 +16,7 @@ jobs:
   build:
     strategy:
       matrix:
-        framework: [cvlc, ffmpeg]
+        framework: [cvlc, ffmpeg, gstreamer]
 
     runs-on: ubuntu-latest
     steps:
