@@ -19,6 +19,9 @@ env:
 
 jobs:
   build-and-push-image:
+    strategy:
+      matrix:
+        framework: [cvlc, ffmpeg]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -51,12 +54,12 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4.3.0
         with:
-          images: ${{ env.REGISTRY }}/${{ env.REPO }}
+          images: ${{ env.REGISTRY }}/${{ env.REPO }}-{{ matrix.framework }}
 
       - name: Build and push
         uses: docker/build-push-action@v4.0.0
         with:
-          context: .
+          context: ./{{ matrix.framework }}/
           platforms: linux/amd64,linux/arm/v7,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
