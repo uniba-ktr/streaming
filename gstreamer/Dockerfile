@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
 	    gstreamer1.0-alsa \
 	    gstreamer1.0-pulseaudio
 
-COPY . .
+COPY entrypoint.sh /usr/bin/entrypoint.sh
+RUN chmod +x /usr/bin/entrypoint.sh
 
-ENTRYPOINT  ["/bin/bash"]
+ENTRYPOINT  ["entrypoint.sh"]

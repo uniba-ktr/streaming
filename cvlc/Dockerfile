@@ -10,11 +10,10 @@ RUN apt-get update && apt-get install -y \
             libvpx-dev \
             libaom-dev
 
-RUN useradd -m vlcuser && usermod -aG video vlcuser
+COPY entrypoint.sh /usr/bin/entrypoint.sh
+RUN chmod +x /usr/bin/entrypoint.sh
 
+RUN useradd -m vlcuser && usermod -aG video vlcuser
 USER vlcuser
 
-# Add the scripts
-COPY . .
-
-ENTRYPOINT  ["/bin/bash"]
+ENTRYPOINT  ["entrypoint.sh"]
