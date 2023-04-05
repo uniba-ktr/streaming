@@ -2,6 +2,7 @@ name: Docker Image CI
 
 env:
   REGISTRY: ghcr.io
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 
 on:
   push:
@@ -11,9 +12,6 @@ on:
   pull_request:
     branches:
       - main
-
-env:
-  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 
 jobs:
   build-image:
