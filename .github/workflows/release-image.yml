@@ -10,9 +10,12 @@
 name: Create and publish a Docker image
 
 on:
+  schedule:
+    - cron: '35 21 * * 1-5'
   push:
     tags:
      - release/*
+     - 'v[0-9]+.[0-9]+'
 
 env:
   REGISTRY: ghcr.io
