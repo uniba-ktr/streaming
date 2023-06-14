@@ -1,0 +1,34 @@
+services:
+
+  cvlc:
+    image: streaming/cvlc
+    build:
+      context: cvlc
+    devices:
+      - /dev/video0
+    env_file:
+      - configuration.env
+    command:
+      - h264
+
+  ffmpeg:
+    image: streaming/ffmpeg
+    build:
+      context: ffmpeg
+    devices:
+      - /dev/video0
+    env_file:
+      - configuration.env
+    command:
+      - h264
+
+  gstreamer:
+    image: streaming/gstreamer
+    build:
+      context: gstreamer
+    devices:
+      - /dev/video0
+    env_file:
+      - configuration.env
+    command:
+      - h264

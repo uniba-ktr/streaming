@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # false=0, true=1
-DEBUG=1
+DEBUG=${DEBUG:-1}
 
 width=${width:-640}
 height=${height:-480}
@@ -11,6 +11,17 @@ ProgName=$(basename $0)
 
 # Debugging, e.g. with sed
 (( $DEBUG )) && SED="sed" || SED="sed -i"
+
+function print_config() {
+cat << EOM
+------------CONFIGURATION------------
+Debugging: ${DEBUG}
+IP: ${IP}
+Port: ${port}
+Resolution (WxH): ${width}x${height}
+-------------------------------------
+EOM
+}
 
 function sub_av1() {
   gst-launch-1.0 v4l2src device=/dev/video0 \
@@ -79,6 +90,7 @@ case $subcommand in
         sub_help
         ;;
     *)
+        (( $DEBUG )) && print_config
         shift
         sub_${subcommand} $@
         echo "Runnig for ${subcommand}, if available"

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # false=0, true=1
-DEBUG=1
+DEBUG=${DEBUG:-1}
 
 width=${width:-640}
 height=${height:-480}
@@ -12,10 +12,20 @@ ProgName=$(basename $0)
 # Debugging, e.g. with sed
 (( $DEBUG )) && SED="sed" || SED="sed -i"
 
+function print_config() {
+cat << EOM
+------------CONFIGURATION------------
+Debugging: ${DEBUG}
+IP: ${IP}
+Port: ${port}
+Resolution (WxH): ${width}x${height}
+-------------------------------------
+EOM
+}
+
 function sub_av1() {
   ffmpeg -f v4l2 \
 	i /dev/video0 \
-	-fps 24 \
 	-s $width"x"$height \
 	-vcodec libaom-av1 \
 	-tune zerolatency \
@@ -25,7 +35,6 @@ function sub_av1() {
 function sub_h264() {
   ffmpeg -f v4l2 \
 	-i /dev/video0 \
-	-fps 24 \
 	-vcodec libx264 \
 	-s $width"x"$height \
 	-preset ultrafast \
@@ -36,7 +45,6 @@ function sub_h264() {
 function sub_h265() {
   ffmpeg -f v4l2 \
 	  -i /dev/video0 \
-	  -fps 24 \
 	  -s $width"x"$height \
 	  -vcodec libx265 \
 	  -preset ultrafast \
@@ -47,7 +55,6 @@ function sub_h265() {
 function sub_vp8() {
   ffmpeg -f v4l2 \
     -i /dev/video0 \
-    -fps 24 \
     -vcodec libvpx \
     -s $width"x"$height \
     -deadline realtime \
@@ -58,7 +65,6 @@ function sub_vp8() {
 function sub_vp9() {
   ffmpeg -f v4l2 \
     -i /dev/video0 \
-    -fps 24 \
     -s $width"x"$height \
     -vcodec libvpx-vp9 \
     -deadline realtime \
@@ -89,6 +95,7 @@ case $subcommand in
         sub_help
         ;;
     *)
+        (( $DEBUG )) && print_config
         shift
         echo "Runnig for ${subcommand}, if available"
         sub_${subcommand} $@
