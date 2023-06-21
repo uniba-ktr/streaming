@@ -21,7 +21,8 @@ function print_config() {
 cat << EOM
 ------------CONFIGURATION------------
 Debugging: ${DEBUG}
-IP: ${IP}
+Remote IP: ${IP}
+Local IP: ${Local_IP}
 Port: ${port}
 Resolution (WxH): ${width}x${height}
 -------------------------------------
