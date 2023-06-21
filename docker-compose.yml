@@ -1,7 +1,12 @@
 services:
 
+  base:
+    image: ghcr.io/uniba-ktr/streaming-base
+    build:
+      context: base
+
   cvlc:
-    image: streaming/cvlc
+    image: ghcr.io/uniba-ktr/streaming-cvlc
     privileged: true
     build:
       context: cvlc
@@ -15,7 +20,7 @@ services:
       - mjpeg
 
   ffmpeg:
-    image: streaming/ffmpeg
+    image: ghcr.io/uniba-ktr/streaming-ffmpeg
     privileged: true
     build:
       context: ffmpeg
@@ -29,7 +34,7 @@ services:
       - mjpeg
 
   gstreamer:
-    image: streaming/gstreamer
+    image: ghcr.io/uniba-ktr/streaming-gstreamer
     privileged: true
     build:
       context: gstreamer
@@ -40,4 +45,4 @@ services:
     env_file:
       - configuration.env
     command:
-      - vp8 
+      - vp8

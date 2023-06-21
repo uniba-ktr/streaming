@@ -1,14 +1,14 @@
-FROM debian:stable-slim
+FROM ghcr.io/uniba-ktr/streaming-base
 
 # Install VLC and the necessary libaries:
 RUN apt-get update && apt-get install -y \
             vlc \
-            v4l-utils \
             libavcodec-extra \
             libx264-dev \
             libx265-dev \
             libvpx-dev \
-            libaom-dev
+            libaom-dev && \
+            rm -rf /var/lib/apt/lists/*
 
 COPY entrypoint.sh /usr/bin/entrypoint.sh
 RUN chmod +x /usr/bin/entrypoint.sh
