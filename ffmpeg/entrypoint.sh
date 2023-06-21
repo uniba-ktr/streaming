@@ -41,7 +41,7 @@ function sub_vp8() {
     -s $width"x"$height \
     -deadline realtime \
     -quality realtime \
-    -f rtp rtp://$IP:$port\webcam.webm
+    -f rtp rtp://$IP:$port/webcam.webm
 }
 
 function sub_vp9() {
@@ -53,7 +53,7 @@ function sub_vp9() {
     -vcodec libvpx-vp9 \
     -deadline realtime \
     -quality realtime \
-    -f rtp rtp://$IP:$port\webcam.webm
+    -f rtp rtp://$IP:$port/webcam.webm
 }
 
 function sub_mjpeg() {
