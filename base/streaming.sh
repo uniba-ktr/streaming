@@ -7,6 +7,8 @@ height=${height:-480}
 IP=${IP:-127.0.0.1}
 port=${port:-2000}
 interface=${interface:-eth0}
+framerate=${framerate:-30}
+video_dev=${video_dev:-/dev/video0}
 
 IP_local=$(ip -4 addr show $interface | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
 
@@ -28,14 +30,15 @@ EOM
 
 sub_help(){
 cat << EOM
-This script helps to copy itself to a server and execute a secondary function. Needs SSH to be setup to connect to a server.
+This script helps run a specified video stream with different codecs.
 Usage: $ProgName <subcommand> [required] {optional}
 Subcommands
-  av1                         With H264 encoding
+  av1                         Using AV1 encoding
   h264                        With H264 encoding
-  h265                        With H264 encoding
-  vp8                         With H264 encoding
-  vp9                         With H264 encoding
+  h265                        With H265 encoding
+  vp8                         With VP8 encoding
+  vp9                         With VP9 encoding
+  mjpeg                       Native Transmission with MJPEG
 For help with each subcommand run:
 $ProgName <subcommand> -h|--help
 EOM
@@ -49,7 +52,7 @@ case $subcommand in
     *)
         (( $DEBUG )) && print_config
         shift
-        echo "Runnig for ${subcommand}, if available"
+        echo "Running for ${subcommand}, if available"
         sub_${subcommand} $@
         if [ $? = 127 ]; then
             echo "Error: '$subcommand' is not a known subcommand." >&2
