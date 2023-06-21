@@ -41,7 +41,7 @@ function sub_vp8() {
 
 function sub_vp9() {
   gst-launch-1.0 -v -e v4l2src device=$video_dev do-timestamp=true \
-    ! video/x-raw, format=YUY2, width=$width, height=$height, framerate=$framerate \
+    ! video/x-raw, format=YUY2, width=$width, height=$height, framerate=$framerate/1 \
     ! videoconvert \
     ! video/x-raw, format=I420 \
     ! vp9enc \
