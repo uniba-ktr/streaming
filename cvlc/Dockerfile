@@ -1,4 +1,6 @@
-FROM ghcr.io/uniba-ktr/streaming-base
+ARG image=ghcr.io/uniba-ktr/streaming-base
+
+FROM $image
 
 # Install VLC and the necessary libaries:
 RUN apt-get update && apt-get install -y \

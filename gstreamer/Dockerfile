@@ -1,4 +1,6 @@
-FROM debian:stable-slim
+ARG image=ghcr.io/uniba-ktr/streaming-base
+
+FROM $image
 
 RUN apt-get update && apt-get install -y \
     	libgstreamer1.0-0 \

@@ -94,6 +94,8 @@ jobs:
           load: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            image=${{ env.REGISTRY }}/${{ env.REPO }}-base:${{ env.BRANCH_NAME }}
 
 
       - name: Inspect Docker image

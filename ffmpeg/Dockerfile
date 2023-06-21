@@ -1,4 +1,6 @@
-FROM debian:stable-slim
+ARG image=ghcr.io/uniba-ktr/streaming-base
+
+FROM $image
 
 # Install FFmpeg and the necessary libaries:
 RUN apt-get update && apt-get install -y \
