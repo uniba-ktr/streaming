@@ -10,7 +10,7 @@ interface=${interface:-eth0}
 framerate=${framerate:-30}
 video_dev=${video_dev:-/dev/video0}
 
-IP_local=$(ip -4 addr show $interface | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
+IP_local=${IP_local:-$(ip -4 addr show $interface | grep -oP '(?<=inet\s)\d+(\.\d+){3}')}
 
 ProgName=$(basename $0)
 
@@ -22,7 +22,7 @@ cat << EOM
 ------------CONFIGURATION------------
 Debugging: ${DEBUG}
 Remote IP: ${IP}
-Local IP: ${Local_IP}
+Local IP: ${IP_local}
 Port: ${port}
 Resolution (WxH): ${width}x${height}
 -------------------------------------
