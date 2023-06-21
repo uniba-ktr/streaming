@@ -2,33 +2,42 @@ services:
 
   cvlc:
     image: streaming/cvlc
+    privileged: true
     build:
       context: cvlc
     devices:
       - /dev/video0
+    ports:
+      - 2000:2000
     env_file:
       - configuration.env
     command:
-      - h264
+      - mjpeg
 
   ffmpeg:
     image: streaming/ffmpeg
+    privileged: true
     build:
       context: ffmpeg
     devices:
       - /dev/video0
+    ports:
+      - 2000:2000
     env_file:
       - configuration.env
     command:
-      - h264
+      - mjpeg
 
   gstreamer:
     image: streaming/gstreamer
+    privileged: true
     build:
       context: gstreamer
     devices:
       - /dev/video0
+    ports:
+      - 2000:2000
     env_file:
       - configuration.env
     command:
-      - h264
+      - vp8 

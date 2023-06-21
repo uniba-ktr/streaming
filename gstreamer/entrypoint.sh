@@ -33,29 +33,31 @@ function sub_av1() {
 
 function sub_h264() {
   gst-launch-1.0 -vv -e v4l2src device=/dev/video0 \
-    ! "image/jpeg,width=$width,height=$height" \
-    ! queue \
-    ! jpegdec \
+    ! video/x-raw,width=$width,height=$height,codec=h264,type=video \
+    ! videoscale\
     ! videoconvert \
-    ! x264enc \
-    ! h264parse \
+    ! x264enc tune=zerolatency \
     ! rtph264pay \
     ! udpsink host=$IP port=$port
 }
 
 function sub_h265() {
-  gst-launch-1.0 v4l2src device=/dev/video0 \
-    ! video/x-raw,width=$width,height=$height,framerate=24/1 \
-    ! x265enc tune=zerolatency preset=ultrafast \
-    ! rtph264pay \
+  gst-launch-1.0 -v -e v4l2src device=/dev/video0 do-timestamp=true \
+    ! video/x-raw, format=YUY2, width=$width, height=$height, framerate=30/1 \
+    ! videoconvert \
+    ! video/x-raw, format=I420 \
+    ! x265enc tune=zerolatency \
+    ! rtph265pay config-interval=3 pt=96 \
     ! udpsink host=$IP port=$port
 }
 
 function sub_vp8() {
-  gst-launch-1.0 v4l2src device=/dev/video0 \
-    ! video/x-raw,width=$width,height=$height,framerate=24/1 \
-    ! vp8enc quality=realtime
-    ! rtpvp8pay \
+  gst-launch-1.0 -v -e v4l2src device=/dev/video0 do-timestamp=true \
+    ! video/x-raw, format=YUY2, width=$width, height=$height, framerate=30/1 \
+    ! videoconvert \
+    ! video/x-raw, format=I420 \
+    ! vp8enc \
+    ! rtpvp8pay pt=96 \
     ! udpsink host=$IP port=$port
 }
 
@@ -67,7 +69,12 @@ function sub_vp9() {
 	! udpsink host=$IP port=$port
 }
 
-
+function sub_mjpeg() {
+  gst-launch-1.0 v4l2src device=/dev/video0 \
+    ! image/jpeg,width=$width,height=$height, framerate=30/1 \
+    ! rtpjpegpay pt=96 \
+    ! udpsink host=$IP port=$port
+}
 
 sub_help(){
 cat << EOM

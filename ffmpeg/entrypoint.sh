@@ -33,7 +33,9 @@ function sub_av1() {
 }
 
 function sub_h264() {
-  ffmpeg -f v4l2 \
+  ffmpeg -fflags nobuffer \
+        -f v4l2 \
+	-framerate 30 \
 	-i /dev/video0 \
 	-vcodec libx264 \
 	-s $width"x"$height \
@@ -45,21 +47,23 @@ function sub_h264() {
 function sub_h265() {
   ffmpeg -f v4l2 \
 	  -i /dev/video0 \
+	  -framerate 30 \
 	  -s $width"x"$height \
 	  -vcodec libx265 \
 	  -preset ultrafast \
 	  -tune zerolatency \
-	  -f mpegts udp://$IP:$port?pkt_size=1316
+	  -f mpegts udp://$IP:$port
 }
 
 function sub_vp8() {
   ffmpeg -f v4l2 \
     -i /dev/video0 \
+    -framerate 30 \
     -vcodec libvpx \
     -s $width"x"$height \
     -deadline realtime \
     -quality realtime \
-    -f mpegts udp://$IP:$port?pkt_size=1316
+    -f mpegts http://$IP:$port/webcam.webm
 }
 
 function sub_vp9() {
@@ -70,6 +74,17 @@ function sub_vp9() {
     -deadline realtime \
     -quality realtime \
     -f mpegts udp://$IP:$port?pkt_size=1316
+}
+
+function sub_mjpeg() {
+  ffmpeg -f v4l2 \
+    -input_format yuyv422 \
+    -s ${width}"x"${height} \
+    -an \
+    -i /dev/video0 \
+    -vcodec mjpeg \
+    -q:v 2 \
+    -f mjpeg udp://$IP:$port
 }
 
 
