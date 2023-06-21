@@ -41,7 +41,7 @@ jobs:
         with:
           context: ./base/
           outputs: type=docker,dest=/tmp/base.tar
-          tags: ${{ env.REGISTRY }}/streaming-base:${{ env.BRANCH_NAME }}
+          tags: ${{ env.REGISTRY }}/${{ env.REPO }}-base:${{ env.BRANCH_NAME }}
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:

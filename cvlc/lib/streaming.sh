@@ -20,6 +20,7 @@ cat << EOM
 ------------CONFIGURATION------------
 Debugging: ${DEBUG}
 IP: ${IP}
+IP_local: ${IP_local}
 Port: ${port}
 Resolution (WxH): ${width}x${height}
 -------------------------------------
