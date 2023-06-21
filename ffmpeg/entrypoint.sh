@@ -1,102 +1,65 @@
 #!/usr/bin/env bash
-# false=0, true=1
-DEBUG=1
-
-width=${width:-640}
-height=${height:-480}
-IP=${IP:-127.0.0.1}
-port=${port:-2000}
-
-ProgName=$(basename $0)
-
-# Debugging, e.g. with sed
-(( $DEBUG )) && SED="sed" || SED="sed -i"
 
 function sub_av1() {
   ffmpeg -f v4l2 \
-	i /dev/video0 \
-	-fps 24 \
+	-i $video_dev \
+	-strict -2 \
 	-s $width"x"$height \
 	-vcodec libaom-av1 \
-	-tune zerolatency \
-	-f mpegts udp://$IP:$port?pkt_size=1316
+	-f http http://$IP_local:$port/webcam.webm
 }
 
 function sub_h264() {
   ffmpeg -f v4l2 \
-	-i /dev/video0 \
-	-fps 24 \
+	-i $video_dev \
+	-framerate $framerate \
 	-vcodec libx264 \
 	-s $width"x"$height \
 	-preset ultrafast \
 	-tune zerolatency \
-	-f mpegts udp://$IP:$port?pkt_size=1316
+	-f mpegts udp://$IP:$port
+
 }
 
 function sub_h265() {
   ffmpeg -f v4l2 \
-	  -i /dev/video0 \
-	  -fps 24 \
-	  -s $width"x"$height \
-	  -vcodec libx265 \
-	  -preset ultrafast \
-	  -tune zerolatency \
-	  -f mpegts udp://$IP:$port?pkt_size=1316
+	-i $video_dev \
+	-framerate $framerate \
+	-s $width"x"$height \
+	-vcodec libx265 \
+	-preset ultrafast \
+	-tune zerolatency \
+	-f mpegts udp://$IP:$port
+
 }
 
 function sub_vp8() {
   ffmpeg -f v4l2 \
-    -i /dev/video0 \
-    -fps 24 \
+    -i $video_dev \
+    -framerate $framerate \
     -vcodec libvpx \
     -s $width"x"$height \
     -deadline realtime \
     -quality realtime \
-    -f mpegts udp://$IP:$port?pkt_size=1316
+    -f rtp rtp://$IP:$port/webcam.webm
 }
 
 function sub_vp9() {
   ffmpeg -f v4l2 \
-    -i /dev/video0 \
-    -fps 24 \
+    -i $video_dev \
+    -framerate $framerate \
     -s $width"x"$height \
+    -strict experimental \
     -vcodec libvpx-vp9 \
     -deadline realtime \
     -quality realtime \
-    -f mpegts udp://$IP:$port?pkt_size=1316
+    -f rtp rtp://$IP:$port/webcam.webm
 }
 
-
-
-sub_help(){
-cat << EOM
-This script helps to copy itself to a server and execute a secondary function. Needs SSH to be setup to connect to a server.
-Usage: $ProgName <subcommand> [required] {optional}
-Subcommands
-  av1                         With H264 encoding
-  h264                        With H264 encoding
-  h265                        With H264 encoding
-  vp8                         With H264 encoding
-  vp9                         With H264 encoding
-For help with each subcommand run:
-$ProgName <subcommand> -h|--help
-EOM
+function sub_mjpeg() {
+  ffmpeg -f v4l2 -input_format yuyv422 -s ${width}"x"${height} -an -i $video_dev -vcodec mjpeg -q:v 2 -f mjpeg udp://$IP:$port
 }
 
-subcommand=$1
-case $subcommand in
-    "" | "-h" | "--help")
-        sub_help
-        ;;
-    *)
-        shift
-        echo "Runnig for ${subcommand}, if available"
-        sub_${subcommand} $@
-        if [ $? = 127 ]; then
-            echo "Error: '$subcommand' is not a known subcommand." >&2
-            echo "       Run '$ProgName --help' for a list of known subcommands." >&2
-            exit 1
-        fi
-        ;;
-esac
+source /usr/lib/streaming.sh
+
 exit 0

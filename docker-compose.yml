@@ -1,0 +1,48 @@
+services:
+
+  base:
+    image: ghcr.io/uniba-ktr/streaming-base
+    build:
+      context: base
+
+  cvlc:
+    image: ghcr.io/uniba-ktr/streaming-cvlc
+    privileged: true
+    build:
+      context: cvlc
+    devices:
+      - /dev/video0
+    ports:
+      - 2000:2000
+    env_file:
+      - configuration.env
+    command:
+      - mjpeg
+
+  ffmpeg:
+    image: ghcr.io/uniba-ktr/streaming-ffmpeg
+    privileged: true
+    build:
+      context: ffmpeg
+    devices:
+      - /dev/video0
+    ports:
+      - 2000:2000
+    env_file:
+      - configuration.env
+    command:
+      - mjpeg
+
+  gstreamer:
+    image: ghcr.io/uniba-ktr/streaming-gstreamer
+    privileged: true
+    build:
+      context: gstreamer
+    devices:
+      - /dev/video0
+    ports:
+      - 2000:2000
+    env_file:
+      - configuration.env
+    command:
+      - vp8

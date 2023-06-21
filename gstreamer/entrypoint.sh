@@ -1,92 +1,61 @@
 #!/usr/bin/env bash
-# false=0, true=1
-DEBUG=1
-
-width=${width:-640}
-height=${height:-480}
-IP=${IP:-127.0.0.1}
-port=${port:-2000}
-
-ProgName=$(basename $0)
-
-# Debugging, e.g. with sed
-(( $DEBUG )) && SED="sed" || SED="sed -i"
-
 function sub_av1() {
-  gst-launch-1.0 v4l2src device=/dev/video0 \
- ! video/x-raw,width=$width,height=$height,framerate=24/1 \
- ! av1enc quality=realtime \
- ! rtpav1pay \
- ! udpsink host=$IP port=$port
+  gst-launch-1.0 v4l2src device=$video_dev \
+  ! video/x-raw,width=$width,height=$height,framerate=$framerate/1 \
+  ! videoconvert \
+  ! video/x-raw, format=I420 \
+  ! av1enc \
+  ! rtpav1pay pt=96 \
+  ! rtpsink host=$IP port=$port
 }
 
 function sub_h264() {
-  gst-launch-1.0 -vv -e v4l2src device=/dev/video0 \
-    ! "image/jpeg,width=$width,height=$height" \
-    ! queue \
-    ! jpegdec \
+  gst-launch-1.0 v4l2src device=$video_dev do-timestamp=true \
+    ! video/x-raw, format=YUY2, width=$width, height=$height, framerate=$framerate/1 \
     ! videoconvert \
-    ! x264enc \
-    ! h264parse \
-    ! rtph264pay \
+    ! video/x-raw, format=I420 \
+    ! x264enc tune=zerolatency \
+    ! rtph264pay config-interval=3 pt=96 \
     ! udpsink host=$IP port=$port
 }
 
 function sub_h265() {
-  gst-launch-1.0 v4l2src device=/dev/video0 \
-    ! video/x-raw,width=$width,height=$height,framerate=24/1 \
-    ! x265enc tune=zerolatency preset=ultrafast \
-    ! rtph264pay \
+  gst-launch-1.0 -v -e v4l2src device=$video_dev do-timestamp=true \
+    ! video/x-raw, format=YUY2, width=$width, height=$height, framerate=$framerate/1 \
+    ! videoconvert \
+    ! video/x-raw, format=I420 \
+    ! x265enc tune=zerolatency \
+    ! rtph265pay config-interval=3 pt=96 \
     ! udpsink host=$IP port=$port
 }
 
 function sub_vp8() {
-  gst-launch-1.0 v4l2src device=/dev/video0 \
-    ! video/x-raw,width=$width,height=$height,framerate=24/1 \
-    ! vp8enc quality=realtime
-    ! rtpvp8pay \
+  gst-launch-1.0 -v -e v4l2src device=$video_dev do-timestamp=true \
+    ! video/x-raw, format=YUY2, width=$width, height=$height, framerate=$framerate/1 \
+    ! videoconvert \
+    ! video/x-raw, format=I420 \
+    ! vp8enc \
+    ! rtpvp8pay pt=96 \
     ! udpsink host=$IP port=$port
 }
 
 function sub_vp9() {
-  gst-launch-1.0 v4l2src device=/dev/video0 \
-	! video/x-raw,width=$width,height=$height,framerate=24/1 \
-	! vp9enc quality=realtime \
-	! rtpvp9pay \
-	! udpsink host=$IP port=$port
+  gst-launch-1.0 -v -e v4l2src device=$video_dev do-timestamp=true \
+    ! video/x-raw, format=YUY2, width=$width, height=$height, framerate=$framerate/1 \
+    ! videoconvert \
+    ! video/x-raw, format=I420 \
+    ! vp9enc \
+    ! rtpvp9pay pt=96 \
+    ! udpsink host=$IP port=$port
 }
 
-
-
-sub_help(){
-cat << EOM
-This script helps to copy itself to a server and execute a secondary function. Needs SSH to be setup to connect to a server.
-Usage: $ProgName <subcommand> [required] {optional}
-Subcommands
-  av1                         With H264 encoding
-  h264                        With H264 encoding
-  h265                        With H264 encoding
-  vp8                         With H264 encoding
-  vp9                         With H264 encoding
-For help with each subcommand run:
-$ProgName <subcommand> -h|--help
-EOM
+function sub_mjpeg() {
+  gst-launch-1.0 v4l2src device=$video_dev \
+    ! image/jpeg,width=$width,height=$height, framerate=$framerate/1 \
+    ! rtpjpegpay pt=96 \
+    ! udpsink host=$IP port=$port
 }
 
-subcommand=$1
-case $subcommand in
-    "" | "-h" | "--help")
-        sub_help
-        ;;
-    *)
-        shift
-        sub_${subcommand} $@
-        echo "Runnig for ${subcommand}, if available"
-        if [ $? = 127 ]; then
-            echo "Error: '$subcommand' is not a known subcommand." >&2
-            echo "       Run '$ProgName --help' for a list of known subcommands." >&2
-            exit 1
-        fi
-        ;;
-esac
+source /usr/lib/streaming.sh
+
 exit 0
