@@ -17,10 +17,8 @@ sudo apt-get install -y \
 
 mkdir "$DIR"
 cd "$DIR"
-declare -a framework=("cvlc") 
-#"ffmpeg" "gstreamer")
-declare -a codec=("h264")
-#"h265" "vp8" "vp9" "mjpeg")
+declare -a framework=("cvlc" "ffmpeg" "gstreamer")
+declare -a codec=("h264" "h265" "vp8" "vp9" "mjpeg")
 
 sudo docker run \
   --volume=/:/rootfs:ro \
