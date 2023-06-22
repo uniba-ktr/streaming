@@ -9,7 +9,7 @@ DIR="testRunData_$DATE"
 
 # times x minute = trial duration
 MINUTE=60
-TIMES=3
+TIMES=10
 
 sudo apt-get install -y \
 	jq \
@@ -17,8 +17,10 @@ sudo apt-get install -y \
 
 mkdir "$DIR"
 cd "$DIR"
-declare -a framework=("cvlc" "ffmpeg" "gstreamer")
-declare -a codec=("h264" "h265" "vp8" "vp9" "mjpeg")
+declare -a framework=("cvlc") 
+#"ffmpeg" "gstreamer")
+declare -a codec=("h264")
+#"h265" "vp8" "vp9" "mjpeg")
 
 sudo docker run \
   --volume=/:/rootfs:ro \
@@ -46,8 +48,9 @@ do
 
     wget -O "${NAME}"_1.json http://localhost:8080/api/v1.3/docker/"${NAME}"
 		cp "${NAME}"_1.json "${NAME}".json
-		for i in {2..${TIMES}}
+		for i in $(seq 2 $TIMES)
 		do
+			echo "Sleeping $i x $MINUTE"
 			sleep ${MINUTE}
 			cp "${NAME}".json "${NAME}"_copy.json
 			wget -O "${NAME}"_"${i}".json http://localhost:8080/api/v1.3/docker/"${NAME}"
@@ -61,5 +64,5 @@ do
 	done
 done
 
-docker stop cadvisor
+docker rm -f cadvisor
 echo "Finished testrun."
