@@ -24,3 +24,10 @@ Additional configuration can be done via the following environment variables, wh
 - `framerate`, if unset 30
 - `video_dev`, if unset /dev/video0
 - `IP_local`, local address for http streams, by default IP address of `interface`
+
+## Publication
+The streaming framework is developed by [Computer Networks Group](https://www.uni-bamberg.de/ktr/). 
+
+It was used in the following publication:
+- <a href="https://link.springer.com/chapter/10.1007/978-3-031-40852-6_16" target="_blank"> **Efficient Internet of Things Surveillance Systems in Edge Computing Environments: Accessible via Web Based Video Transmissions from Low-Cost Hardware**</a> (at I4CS 2023)
+
